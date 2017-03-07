@@ -7,6 +7,7 @@
  * @license MIT lisence
  */
 
+#include <coil/TimeValue.h>
 #include "KobukiRTC.h"
 
 // Module specification
@@ -27,7 +28,7 @@ static const char* kobukirtc_spec[] =
     // Configuration variables
     "conf.default.debug", "0",
 #ifdef WIN32
-    "conf.default.port", "COM1",
+    "conf.default.port", "COM3",
 #else
     "conf.default.port", "/dev/ttyUSB0",
 #endif
@@ -118,16 +119,17 @@ RTC::ReturnCode_t KobukiRTC::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
 {
+  std::cout << "KobukiRTC::onActivated()" << std::endl;
   m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
   m_bumper.data.length(3);
 
-  m_bumper.data.length(3);
   return RTC::RTC_OK;
 }
 
 
 RTC::ReturnCode_t KobukiRTC::onDeactivated(RTC::UniqueId ec_id)
 {
+  std::cout << "KobukiRTC::onDeactivate()" << std::endl;
   delete m_pKobuki;
   return RTC::RTC_OK;
 }
@@ -145,6 +147,12 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
     m_pKobuki->setPose(m_poseUpdate.data.position.x, m_poseUpdate.data.position.y, m_poseUpdate.data.heading);
   }
 
+  if(m_pKobuki->getDigitalIn(0)) {
+    std::cout << "EMERGENCY !!" << std::endl;
+    m_pKobuki->setTargetVelocity(0,0);
+    return RTC::RTC_ERROR;
+  }
+
   m_currentPose.data.position.x = m_pKobuki->getPoseX();
   m_currentPose.data.position.y = m_pKobuki->getPoseY();
   m_currentPose.data.heading = m_pKobuki->getPoseTh();
@@ -157,19 +165,29 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   m_bumper.data[1] = m_pKobuki->isCenterBump();
   m_bumper.data[2] = m_pKobuki->isLeftBump();
   m_bumperOut.write();
+  static coil::TimeValue pt(0.0);
+  coil::TimeValue ct = coil::gettimeofday();
+  //std::cout << double(ct-pt) << std::endl;
+  pt = ct;
   return RTC::RTC_OK;
 }
 
-/*
+
 RTC::ReturnCode_t KobukiRTC::onAborting(RTC::UniqueId ec_id)
 {
+  std::cout << "KobukiRTC::onAborting()" << std::endl;
+
+  //delete m_pKobuki;
   return RTC::RTC_OK;
 }
-*/
+
 
 /*
 RTC::ReturnCode_t KobukiRTC::onError(RTC::UniqueId ec_id)
 {
+  std::cout << "KobukiRTC::onError()" << std::endl;
+  m_pKobuki->setTargetVelocity(0,0);
+
   return RTC::RTC_OK;
 }
 */

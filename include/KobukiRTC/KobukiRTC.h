@@ -162,7 +162,7 @@ class KobukiRTC
    * 
    * 
    */
-  // virtual RTC::ReturnCode_t onAborting(RTC::UniqueId ec_id);
+  virtual RTC::ReturnCode_t onAborting(RTC::UniqueId ec_id);
 
   /***
    *
