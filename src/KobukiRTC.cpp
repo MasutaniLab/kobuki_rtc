@@ -121,7 +121,14 @@ RTC::ReturnCode_t KobukiRTC::onShutdown(RTC::UniqueId ec_id)
 RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
 {
   std::cout << "KobukiRTC::onActivated()" << std::endl;
-  m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
+  std::cout << "m_port: " << m_port << std::endl;
+  try {
+    m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
+  } catch(std::exception &e) {
+    std::cerr << e.what() << std::endl;
+    return RTC::RTC_ERROR;
+  }
+  
   m_bumper.data.length(3);
 
   return RTC::RTC_OK;
