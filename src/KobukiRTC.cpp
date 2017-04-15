@@ -67,6 +67,7 @@ KobukiRTC::~KobukiRTC()
 
 RTC::ReturnCode_t KobukiRTC::onInitialize()
 {
+  std::cout << "KobukiRTC::onInitialize()" << std::endl;
   // Registration: InPort/OutPort/Service
   // <rtc-template block="registration">
   // Set InPort buffers
@@ -153,22 +154,31 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
     return RTC::RTC_ERROR;
   }
 
+  static coil::TimeValue ptv(0.0);
+  coil::TimeValue tv(coil::gettimeofday());
+  //std::cout << double(tv-ptv) << std::endl;
+  ptv = tv;
+
+  m_currentPose.tm.sec = tv.sec();
+  m_currentPose.tm.nsec = tv.usec() * 1000;
   m_currentPose.data.position.x = m_pKobuki->getPoseX();
   m_currentPose.data.position.y = m_pKobuki->getPoseY();
   m_currentPose.data.heading = m_pKobuki->getPoseTh();
   m_currentPoseOut.write();
   
+  m_battery.tm.sec = tv.sec();
+  m_battery.tm.nsec = tv.usec() * 1000;
   m_battery.data = m_pKobuki->getBatteryVoltage();
   m_batteryOut.write();
   
+  m_bumper.tm.sec = tv.sec();
+  m_bumper.tm.nsec = tv.usec() * 1000;
   m_bumper.data[0] = m_pKobuki->isRightBump();
   m_bumper.data[1] = m_pKobuki->isCenterBump();
   m_bumper.data[2] = m_pKobuki->isLeftBump();
   m_bumperOut.write();
-  static coil::TimeValue pt(0.0);
-  coil::TimeValue ct = coil::gettimeofday();
-  //std::cout << double(ct-pt) << std::endl;
-  pt = ct;
+
+  Sleep(9); //設定に関係なく10ms周期にするため．要件等！！
   return RTC::RTC_OK;
 }
 
