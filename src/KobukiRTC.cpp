@@ -67,7 +67,7 @@ KobukiRTC::~KobukiRTC()
 
 RTC::ReturnCode_t KobukiRTC::onInitialize()
 {
-  std::cout << "KobukiRTC::onInitialize()" << std::endl;
+  RTC_INFO(("onInitialize()"));
   // Registration: InPort/OutPort/Service
   // <rtc-template block="registration">
   // Set InPort buffers
@@ -120,12 +120,12 @@ RTC::ReturnCode_t KobukiRTC::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
 {
-  std::cout << "KobukiRTC::onActivated()" << std::endl;
-  std::cout << "m_port: " << m_port << std::endl;
+  RTC_INFO(("onActivated()"));
+  RTC_INFO((("m_port: " + m_port).c_str()));
   try {
     m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
   } catch(std::exception &e) {
-    std::cerr << e.what() << std::endl;
+    RTC_ERROR((e.what()));
     return RTC::RTC_ERROR;
   }
   
@@ -137,7 +137,7 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onDeactivated(RTC::UniqueId ec_id)
 {
-  std::cout << "KobukiRTC::onDeactivate()" << std::endl;
+  RTC_INFO(("onDeactivate()"));
   delete m_pKobuki;
   return RTC::RTC_OK;
 }
@@ -156,7 +156,7 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   }
 
   if(m_pKobuki->getDigitalIn(0)) {
-    std::cout << "EMERGENCY !!" << std::endl;
+    RTC_ERROR(("EMERGENCY !!"));
     m_pKobuki->setTargetVelocity(0,0);
     return RTC::RTC_ERROR;
   }
@@ -192,7 +192,7 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onAborting(RTC::UniqueId ec_id)
 {
-  std::cout << "KobukiRTC::onAborting()" << std::endl;
+  RTC_INFO(("KobukiRTC::onAborting()"));
 
   //delete m_pKobuki;
   return RTC::RTC_OK;
