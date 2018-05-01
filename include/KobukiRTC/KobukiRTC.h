@@ -33,6 +33,8 @@
 
 // </rtc-template>
 
+#include <Windows.h>
+#include <mmsystem.h>
 #include "libkobuki.h"
 using namespace RTC;
 
@@ -302,6 +304,8 @@ class KobukiRTC
 
 
   rt_net::Kobuki *m_pKobuki;
+  JOYINFOEX m_JoyInfoEx;
+  bool m_joy;
 };
 
 
