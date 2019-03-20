@@ -185,7 +185,6 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   m_bumper.data[2] = m_pKobuki->isLeftBump();
   m_bumperOut.write();
 
-  Sleep(9); //設定に関係なく10ms周期にするため．要件等！！
   return RTC::RTC_OK;
 }
 
