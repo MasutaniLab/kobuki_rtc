@@ -1,4 +1,4 @@
-KobukiRTC - 日本語
+﻿KobukiRTC - 日本語
 =======================
 
 
@@ -99,6 +99,10 @@ KobukiRTCは ``KobukiRTCComp`` を実行（ ``${prefix}/components/bin`` に
 パラメータ       データ型           デフォルト値     意味
 ================ ================== ================ ====
 debug            int                0                
+port             std::string        com1             
+gainP            double             100              
+gainI            double             0.1              
+gainD            double             2                
 ================ ================== ================ ====
 
 ポート
@@ -112,6 +116,7 @@ debug            int                0
 targetVelocity  InPort      RTC::TimedVelocity2D           
 poseUpdate      InPort      RTC::TimedPose2D               
 currentPose     OutPort     RTC::TimedPose2D               
+battery         OutPort     RTC::TimedDouble               
 bumper          OutPort     RTC::TimedBooleanSeq           bumper (seq: RIGHT, CENTER, LEFT)
 =============== =========== ============================== ====
 

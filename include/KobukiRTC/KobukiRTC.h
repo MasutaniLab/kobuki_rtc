@@ -5,7 +5,6 @@
  * @date  $Date$
  *
  * $Id$
- * @license MIT License
  */
 
 #ifndef KOBUKIRTC_H
@@ -14,11 +13,6 @@
 #include <rtm/idl/BasicDataTypeSkel.h>
 #include <rtm/idl/ExtendedDataTypesSkel.h>
 #include <rtm/idl/InterfaceDataTypesSkel.h>
-#include <rtm/Manager.h>
-#include <rtm/DataFlowComponentBase.h>
-#include <rtm/CorbaPort.h>
-#include <rtm/DataInPort.h>
-#include <rtm/DataOutPort.h>
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -27,13 +21,23 @@
 
 // Service Consumer stub headers
 // <rtc-template block="consumer_stub_h">
-//#include "ExtendedDataTypesStub.h"
-//#include "ExtendedDataTypesStub.h"
-//#include "BasicDataTypeStub.h"
+#include "ExtendedDataTypesStub.h"
+#include "BasicDataTypeStub.h"
 
 // </rtc-template>
 
+// Service Consumer stub headers
+// <rtc-template block="port_stub_h">
+// </rtc-template>
+
+#include <rtm/Manager.h>
+#include <rtm/DataFlowComponentBase.h>
+#include <rtm/CorbaPort.h>
+#include <rtm/DataInPort.h>
+#include <rtm/DataOutPort.h>
+
 #include "libkobuki.h"
+
 using namespace RTC;
 
 /*!
@@ -162,7 +166,7 @@ class KobukiRTC
    * 
    * 
    */
-  virtual RTC::ReturnCode_t onAborting(RTC::UniqueId ec_id);
+  // virtual RTC::ReturnCode_t onAborting(RTC::UniqueId ec_id);
 
   /***
    *
@@ -237,9 +241,27 @@ class KobukiRTC
   /*!
    * 
    * - Name:  port
-   * - DefaultValue: COM1
+   * - DefaultValue: com1
    */
   std::string m_port;
+  /*!
+   * 
+   * - Name:  gainP
+   * - DefaultValue: 100
+   */
+  double m_gainP;
+  /*!
+   * 
+   * - Name:  gainI
+   * - DefaultValue: 0.1
+   */
+  double m_gainI;
+  /*!
+   * 
+   * - Name:  gainD
+   * - DefaultValue: 2
+   */
+  double m_gainD;
 
   // </rtc-template>
 
@@ -263,17 +285,16 @@ class KobukiRTC
   /*!
    */
   OutPort<RTC::TimedPose2D> m_currentPoseOut;
+  RTC::TimedDouble m_battery;
+  /*!
+   */
+  OutPort<RTC::TimedDouble> m_batteryOut;
   RTC::TimedBooleanSeq m_bumper;
   /*!
    * bumper (seq: RIGHT, CENTER, LEFT)
    */
   OutPort<RTC::TimedBooleanSeq> m_bumperOut;
-  RTC::TimedDouble m_battery;
-  /*!
-   * battery Voltage
-   */
-  OutPort<RTC::TimedDouble> m_batteryOut;
-    
+  
   // </rtc-template>
 
   // CORBA Port declaration

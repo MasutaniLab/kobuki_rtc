@@ -4,7 +4,7 @@
  * @brief Kobuki RTC
  * @date $Date$
  *
- * @license MIT lisence
+ * $Id$
  */
 
 #include <coil/TimeValue.h>
@@ -27,14 +27,25 @@ static const char* kobukirtc_spec[] =
     "lang_type",         "compile",
     // Configuration variables
     "conf.default.debug", "0",
-#ifdef WIN32
-    "conf.default.port", "COM3",
-#else
-    "conf.default.port", "/dev/ttyUSB0",
-#endif
+    "conf.default.port", "com1",
+    "conf.default.gainP", "100",
+    "conf.default.gainI", "0.1",
+    "conf.default.gainD", "2",
+
     // Widget
     "conf.__widget__.debug", "text",
+    "conf.__widget__.port", "text",
+    "conf.__widget__.gainP", "text",
+    "conf.__widget__.gainI", "text",
+    "conf.__widget__.gainD", "text",
     // Constraints
+
+    "conf.__type__.debug", "int",
+    "conf.__type__.port", "std::string",
+    "conf.__type__.gainP", "double",
+    "conf.__type__.gainI", "double",
+    "conf.__type__.gainD", "double",
+
     ""
   };
 // </rtc-template>
@@ -90,9 +101,13 @@ RTC::ReturnCode_t KobukiRTC::onInitialize()
   // <rtc-template block="bind_config">
   // Bind variables and configuration variable
   bindParameter("debug", m_debug, "0");
-  bindParameter("port", m_port, "COM1");
+  bindParameter("port", m_port, "com1");
+  bindParameter("gainP", m_gainP, "100");
+  bindParameter("gainI", m_gainI, "0.1");
+  bindParameter("gainD", m_gainD, "2");
   // </rtc-template>
   
+  std::cout << "end onInitialised()" << std::endl;
   return RTC::RTC_OK;
 }
 
@@ -120,11 +135,13 @@ RTC::ReturnCode_t KobukiRTC::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
 {
+  std::cout << "begin onActivated()" << std::endl;
   RTC_INFO(("onActivated()"));
   RTC_INFO((("m_port: " + m_port).c_str()));
+
   try {
     m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
-    m_pKobuki->setGain(50, 0.05, 1);
+    m_pKobuki->setGain(m_gainP, m_gainI, m_gainD);
   } catch(std::exception &e) {
     RTC_ERROR((e.what()));
     return RTC::RTC_ERROR;
@@ -189,22 +206,16 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   return RTC::RTC_OK;
 }
 
-
+/*
 RTC::ReturnCode_t KobukiRTC::onAborting(RTC::UniqueId ec_id)
 {
-  RTC_INFO(("KobukiRTC::onAborting()"));
-
-  //delete m_pKobuki;
   return RTC::RTC_OK;
 }
-
+*/
 
 /*
 RTC::ReturnCode_t KobukiRTC::onError(RTC::UniqueId ec_id)
 {
-  std::cout << "KobukiRTC::onError()" << std::endl;
-  m_pKobuki->setTargetVelocity(0,0);
-
   return RTC::RTC_OK;
 }
 */

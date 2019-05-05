@@ -1,4 +1,4 @@
-======================================================================
+﻿======================================================================
   RTComponent: KobukiRTC specificatioin
 
   OpenRTM-aist-1.0.0
@@ -10,8 +10,8 @@
 #   --module-desc='Kobuki RTC' --module-version=1.0.0 --module-vendor=Mizukawa Lab. Shibaura Univ. 
 #   --module-category=Experimenta --module-comp-type=STATIC 
 #   --module-act-type=PERIODIC --module-max-inst=1 
-#   --config=debug:int:0 
-#   --inport=targetVelocity:RTC::TimedVelocity2D --inport=poseUpdate:RTC::TimedPose2D --outport=currentPose:RTC::TimedPose2D --outport=bumper:RTC::TimedBooleanSeq 
+#   --config=debug:int:0 --config=port:std::string:com1 --config=gainP:double:100 --config=gainI:double:0.1 --config=gainD:double:2 
+#   --inport=targetVelocity:RTC::TimedVelocity2D --inport=poseUpdate:RTC::TimedPose2D --outport=currentPose:RTC::TimedPose2D --outport=battery:RTC::TimedDouble --outport=bumper:RTC::TimedBooleanSeq 
 
 
 ======================================================================
@@ -128,8 +128,26 @@ Lang Type:
 		RangeHigh:
 		DefaultValue:
 
-	Name:        bumper
+	Name:        battery
 	PortNumber:  1
+	Description: 
+	PortType: 
+	DataType:    RTC::TimedDouble
+	MaxOut: 
+	[Data Elements]
+		Name:
+		Type:            
+		Number:          
+		Semantics:       
+		Unit:            
+		Frequency:       
+		Operation Cycle: 
+		RangeLow:
+		RangeHigh:
+		DefaultValue:
+
+	Name:        bumper
+	PortNumber:  2
 	Description: bumper (seq: RIGHT, CENTER, LEFT)
 	PortType: 
 	DataType:    RTC::TimedBooleanSeq
@@ -165,6 +183,38 @@ Lang Type:
 		Description:     
 		Type:            int
 		DefaultValue:     0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             port
+		Description:     
+		Type:            std::string
+		DefaultValue:     com1
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             gainP
+		Description:     
+		Type:            double
+		DefaultValue:     100
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             gainI
+		Description:     
+		Type:            double
+		DefaultValue:     0.1
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             gainD
+		Description:     
+		Type:            double
+		DefaultValue:     2
 		Unit:            
 		Range:           
 		Constraint:      

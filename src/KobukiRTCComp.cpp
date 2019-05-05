@@ -5,7 +5,6 @@
  * @date $Date$
  *
  * $Id$
- * @license MIT License
  */
 
 #include <rtm/Manager.h>
