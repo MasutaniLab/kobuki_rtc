@@ -1,4 +1,4 @@
-// -*- C++ -*-
+﻿// -*- C++ -*-
 /*!
  * @file KobukiRTCComp.cpp
  * @brief Standalone component

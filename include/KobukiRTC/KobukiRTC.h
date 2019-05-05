@@ -1,4 +1,4 @@
-// -*- C++ -*-
+﻿// -*- C++ -*-
 /*!
  * @file  KobukiRTC.h
  * @brief Kobuki RTC

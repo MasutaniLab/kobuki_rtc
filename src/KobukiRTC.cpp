@@ -1,4 +1,4 @@
-// -*- C++ -*-
+﻿// -*- C++ -*-
 /*!
  * @file  KobukiRTC.cpp
  * @brief Kobuki RTC
@@ -124,6 +124,7 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
   RTC_INFO((("m_port: " + m_port).c_str()));
   try {
     m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
+    m_pKobuki->setGain(50, 0.05, 1);
   } catch(std::exception &e) {
     RTC_ERROR((e.what()));
     return RTC::RTC_ERROR;
