@@ -323,6 +323,7 @@ class KobukiRTC
 
 
   rt_net::Kobuki *m_pKobuki;
+  bool m_rtcError;  //OpenRTM-aist-1.2.0のバグ回避
 };
 
 

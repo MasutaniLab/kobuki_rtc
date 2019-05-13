@@ -138,12 +138,14 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
   std::cout << "begin onActivated()" << std::endl;
   RTC_INFO(("onActivated()"));
   RTC_INFO((("m_port: " + m_port).c_str()));
+  m_rtcError = false;  //OpenRTM-aist-1.2.0のバグ回避
 
   try {
     m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
     m_pKobuki->setGain(m_gainP, m_gainI, m_gainD);
   } catch(std::exception &e) {
     RTC_ERROR((e.what()));
+    m_rtcError = true;  //OpenRTM-aist-1.2.0のバグ回避
     return RTC::RTC_ERROR;
   }
   
@@ -163,6 +165,8 @@ RTC::ReturnCode_t KobukiRTC::onDeactivated(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
 {
+  if (m_rtcError) return RTC::RTC_ERROR; //OpenRTM-aist-1.2.0のバグ回避
+
   if(m_targetVelocityIn.isNew()) {
     m_targetVelocityIn.read();
     m_pKobuki->setTargetVelocity(m_targetVelocity.data.vx, m_targetVelocity.data.va);
