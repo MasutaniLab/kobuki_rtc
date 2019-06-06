@@ -1,10 +1,10 @@
-// -*- C++ -*-
+ï»¿// -*- C++ -*-
 /*!
  * @file  KobukiRTC.cpp
  * @brief Kobuki RTC
  * @date $Date$
  *
- * @license MIT lisence
+ * $Id$
  */
 
 #include <coil/TimeValue.h>
@@ -28,14 +28,25 @@ static const char* kobukirtc_spec[] =
     "lang_type",         "compile",
     // Configuration variables
     "conf.default.debug", "0",
-#ifdef WIN32
-    "conf.default.port", "COM3",
-#else
-    "conf.default.port", "/dev/ttyUSB0",
-#endif
+    "conf.default.port", "com1",
+    "conf.default.gainP", "100",
+    "conf.default.gainI", "0.1",
+    "conf.default.gainD", "2",
+
     // Widget
     "conf.__widget__.debug", "text",
+    "conf.__widget__.port", "text",
+    "conf.__widget__.gainP", "text",
+    "conf.__widget__.gainI", "text",
+    "conf.__widget__.gainD", "text",
     // Constraints
+
+    "conf.__type__.debug", "int",
+    "conf.__type__.port", "std::string",
+    "conf.__type__.gainP", "double",
+    "conf.__type__.gainI", "double",
+    "conf.__type__.gainD", "double",
+
     ""
   };
 // </rtc-template>
@@ -91,9 +102,13 @@ RTC::ReturnCode_t KobukiRTC::onInitialize()
   // <rtc-template block="bind_config">
   // Bind variables and configuration variable
   bindParameter("debug", m_debug, "0");
-  bindParameter("port", m_port, "COM1");
+  bindParameter("port", m_port, "com1");
+  bindParameter("gainP", m_gainP, "100");
+  bindParameter("gainI", m_gainI, "0.1");
+  bindParameter("gainD", m_gainD, "2");
   // </rtc-template>
   
+  std::cout << "end onInitialised()" << std::endl;
   return RTC::RTC_OK;
 }
 
@@ -121,12 +136,17 @@ RTC::ReturnCode_t KobukiRTC::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
 {
+  std::cout << "begin onActivated()" << std::endl;
   RTC_INFO(("onActivated()"));
   RTC_INFO((("m_port: " + m_port).c_str()));
+  m_rtcError = false;  //OpenRTM-aist-1.2.0ã®ãƒã‚°å›é¿
+
   try {
     m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
+    m_pKobuki->setGain(m_gainP, m_gainI, m_gainD);
   } catch(std::exception &e) {
     RTC_ERROR((e.what()));
+    m_rtcError = true;  //OpenRTM-aist-1.2.0ã®ãƒã‚°å›é¿
     return RTC::RTC_ERROR;
   }
   
@@ -139,10 +159,10 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
   m_JoyInfoEx.dwFlags = JOY_RETURNALL;
   if (joyGetPosEx(0, &m_JoyInfoEx) == JOYERR_NOERROR) {
     m_joy = true;
-    RTC_INFO(("ƒQ[ƒ€ƒRƒ“ƒgƒ[ƒ‰—LŒø"));
+    RTC_INFO(("ã‚²ãƒ¼ãƒ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©æœ‰åŠ¹"));
   } else {
     m_joy = false;
-    RTC_INFO(("ƒQ[ƒ€ƒRƒ“ƒgƒ[ƒ‰–³Œø"));
+    RTC_INFO(("ã‚²ãƒ¼ãƒ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ç„¡åŠ¹"));
   }
 
   return RTC::RTC_OK;
@@ -159,6 +179,8 @@ RTC::ReturnCode_t KobukiRTC::onDeactivated(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
 {
+  if (m_rtcError) return RTC::RTC_ERROR; //OpenRTM-aist-1.2.0ã®ãƒã‚°å›é¿
+
   if(m_targetVelocityIn.isNew()) {
     m_targetVelocityIn.read();
     if (abs(m_targetVelocity.data.vx) > 0.001
@@ -174,7 +196,7 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   }
 
   if(m_pKobuki->getDigitalIn(0)) {
-    RTC_ERROR(("‹Ù‹}’â~ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ü‚µ‚½II"));
+    RTC_ERROR(("ç·Šæ€¥åœæ­¢ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¾ã—ãŸï¼ï¼"));
     m_pKobuki->setTargetVelocity(0,0);
     return RTC::RTC_ERROR;
   }
@@ -218,26 +240,20 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
     }
   }
 
-  Sleep(9); //İ’è‚ÉŠÖŒW‚È‚­10msüŠú‚É‚·‚é‚½‚ßD—vŒ“™II
+  Sleep(9); //è¨­å®šã«é–¢ä¿‚ãªã10mså‘¨æœŸã«ã™ã‚‹ãŸã‚ï¼è¦ä»¶ç­‰ï¼ï¼
   return RTC::RTC_OK;
 }
 
-
+/*
 RTC::ReturnCode_t KobukiRTC::onAborting(RTC::UniqueId ec_id)
 {
-  RTC_INFO(("KobukiRTC::onAborting()"));
-
-  //delete m_pKobuki;
   return RTC::RTC_OK;
 }
-
+*/
 
 /*
 RTC::ReturnCode_t KobukiRTC::onError(RTC::UniqueId ec_id)
 {
-  std::cout << "KobukiRTC::onError()" << std::endl;
-  m_pKobuki->setTargetVelocity(0,0);
-
   return RTC::RTC_OK;
 }
 */

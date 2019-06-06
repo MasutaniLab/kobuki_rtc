@@ -1,4 +1,4 @@
-KobukiRTCName - English
+﻿KobukiRTCName - English
 ========================
 
 .. toctree::
@@ -107,6 +107,10 @@ The available configuration parameters are described below:
 Parameter        Data type          Default Value    Effect
 ================ ================== ================ ======
 debug            int                0                
+port             std::string        com1             
+gainP            double             100              
+gainI            double             0.1              
+gainD            double             2                
 ================ ================== ================ ======
 
 Ports
@@ -120,6 +124,7 @@ Name            Type        Data type                      Purpose
 targetVelocity  InPort      RTC::TimedVelocity2D           
 poseUpdate      InPort      RTC::TimedPose2D               
 currentPose     OutPort     RTC::TimedPose2D               
+battery         OutPort     RTC::TimedDouble               
 bumper          OutPort     RTC::TimedBooleanSeq           bumper (seq: RIGHT, CENTER, LEFT)
 =============== =========== ============================== =======
 

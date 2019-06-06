@@ -1,11 +1,10 @@
-// -*- C++ -*-
+﻿// -*- C++ -*-
 /*!
  * @file KobukiRTCComp.cpp
  * @brief Standalone component
  * @date $Date$
  *
  * $Id$
- * @license MIT License
  */
 
 #include <rtm/Manager.h>
