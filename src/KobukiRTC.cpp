@@ -9,6 +9,7 @@
 
 #include <coil/TimeValue.h>
 #include "KobukiRTC.h"
+using namespace std;
 
 // Module specification
 // <rtc-template block="module_spec">
@@ -138,16 +139,31 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
   std::cout << "begin onActivated()" << std::endl;
   RTC_INFO(("onActivated()"));
   RTC_INFO((("m_port: " + m_port).c_str()));
+  m_rtcError = false;  //OpenRTM-aist-1.2.0のバグ回避
 
   try {
     m_pKobuki = createKobuki(rt_net::KobukiStringArgument(m_port));
     m_pKobuki->setGain(m_gainP, m_gainI, m_gainD);
   } catch(std::exception &e) {
     RTC_ERROR((e.what()));
+    m_rtcError = true;  //OpenRTM-aist-1.2.0のバグ回避
     return RTC::RTC_ERROR;
   }
   
   m_bumper.data.length(3);
+
+  m_targetVelocity.data.vx = 0;
+  m_targetVelocity.data.va = 0;
+
+  m_JoyInfoEx.dwSize = sizeof(JOYINFOEX);
+  m_JoyInfoEx.dwFlags = JOY_RETURNALL;
+  if (joyGetPosEx(0, &m_JoyInfoEx) == JOYERR_NOERROR) {
+    m_joy = true;
+    RTC_INFO(("ゲームコントローラ有効"));
+  } else {
+    m_joy = false;
+    RTC_INFO(("ゲームコントローラ無効"));
+  }
 
   return RTC::RTC_OK;
 }
@@ -163,9 +179,15 @@ RTC::ReturnCode_t KobukiRTC::onDeactivated(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
 {
+  if (m_rtcError) return RTC::RTC_ERROR; //OpenRTM-aist-1.2.0のバグ回避
+
   if(m_targetVelocityIn.isNew()) {
     m_targetVelocityIn.read();
-    m_pKobuki->setTargetVelocity(m_targetVelocity.data.vx, m_targetVelocity.data.va);
+    if (abs(m_targetVelocity.data.vx) > 0.001
+      || abs(m_targetVelocity.data.va) > 0.001
+      || !m_joy) {
+      m_pKobuki->setTargetVelocity(m_targetVelocity.data.vx, m_targetVelocity.data.va);
+    }
   }
 
   if(m_poseUpdateIn.isNew()) {
@@ -174,7 +196,7 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   }
 
   if(m_pKobuki->getDigitalIn(0)) {
-    RTC_ERROR(("EMERGENCY !!"));
+    RTC_ERROR(("緊急停止ボタンが押されました！！"));
     m_pKobuki->setTargetVelocity(0,0);
     return RTC::RTC_ERROR;
   }
@@ -203,6 +225,22 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   m_bumper.data[2] = m_pKobuki->isLeftBump();
   m_bumperOut.write();
 
+  if (m_joy && joyGetPosEx(0, &m_JoyInfoEx) == JOYERR_NOERROR) {
+    if (abs(m_targetVelocity.data.vx) <= 0.001
+      && abs(m_targetVelocity.data.va) <= 0.001) {
+      int joyx = m_JoyInfoEx.dwXpos;
+      int joyy = m_JoyInfoEx.dwYpos;
+      const double vxmax = 0.3;
+      const double vamax = 1.0;
+      double vx = -vxmax*(joyy - 0x8000) / 0x8000;
+      if (abs(vx) < 0.1*vxmax) vx = 0;
+      double va = -vamax*(joyx - 0x8000) / 0x8000;
+      if (abs(va) < 0.1*vamax) va = 0;
+      m_pKobuki->setTargetVelocity(vx, va);
+    }
+  }
+
+  Sleep(9); //設定に関係なく10ms周期にするため．要件等！！
   return RTC::RTC_OK;
 }
 

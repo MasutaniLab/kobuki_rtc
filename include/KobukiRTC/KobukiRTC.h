@@ -36,6 +36,8 @@
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
 
+#include <Windows.h>
+#include <mmsystem.h>
 #include "libkobuki.h"
 
 using namespace RTC;
@@ -294,7 +296,7 @@ class KobukiRTC
    * bumper (seq: RIGHT, CENTER, LEFT)
    */
   OutPort<RTC::TimedBooleanSeq> m_bumperOut;
-  
+    
   // </rtc-template>
 
   // CORBA Port declaration
@@ -323,6 +325,9 @@ class KobukiRTC
 
 
   rt_net::Kobuki *m_pKobuki;
+  JOYINFOEX m_JoyInfoEx;
+  bool m_joy;
+  bool m_rtcError;  //OpenRTM-aist-1.2.0のバグ回避
 };
 
 
