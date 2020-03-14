@@ -111,6 +111,7 @@ port             std::string        com1
 gainP            double             100              
 gainI            double             0.1              
 gainD            double             2                
+joy              short              1                
 ================ ================== ================ ======
 
 Ports

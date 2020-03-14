@@ -20,9 +20,9 @@
 # <rtc-template block="module">
 Module Name: KobukiRTC
 Description: Kobuki RTC
-Version:     1.0.0
-Vendor:      Mizukawa Lab. Shibaura Univ.
-Category:    Experimenta
+Version:     1.1.0
+Vendor:      MasutaniLab
+Category:    MobileRobot
 Kind:        DataFlowComponent
 Comp. Type:  STATIC
 Act. Type:   PERIODIC
@@ -215,6 +215,14 @@ Lang Type:
 		Description:     
 		Type:            double
 		DefaultValue:     2
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             joy
+		Description:     
+		Type:            short
+		DefaultValue:     1
 		Unit:            
 		Range:           
 		Constraint:      

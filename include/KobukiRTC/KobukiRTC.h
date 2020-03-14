@@ -28,6 +28,8 @@
 
 // Service Consumer stub headers
 // <rtc-template block="port_stub_h">
+
+
 // </rtc-template>
 
 #include <rtm/Manager.h>
@@ -264,6 +266,12 @@ class KobukiRTC
    * - DefaultValue: 2
    */
   double m_gainD;
+  /*!
+   * 
+   * - Name:  joy
+   * - DefaultValue: 1
+   */
+  short int m_joy;
 
   // </rtc-template>
 
@@ -272,11 +280,11 @@ class KobukiRTC
   RTC::TimedVelocity2D m_targetVelocity;
   /*!
    */
-  InPort<RTC::TimedVelocity2D> m_targetVelocityIn;
+  RTC::InPort<RTC::TimedVelocity2D> m_targetVelocityIn;
   RTC::TimedPose2D m_poseUpdate;
   /*!
    */
-  InPort<RTC::TimedPose2D> m_poseUpdateIn;
+  RTC::InPort<RTC::TimedPose2D> m_poseUpdateIn;
   
   // </rtc-template>
 
@@ -286,17 +294,17 @@ class KobukiRTC
   RTC::TimedPose2D m_currentPose;
   /*!
    */
-  OutPort<RTC::TimedPose2D> m_currentPoseOut;
+  RTC::OutPort<RTC::TimedPose2D> m_currentPoseOut;
   RTC::TimedDouble m_battery;
   /*!
    */
-  OutPort<RTC::TimedDouble> m_batteryOut;
+  RTC::OutPort<RTC::TimedDouble> m_batteryOut;
   RTC::TimedBooleanSeq m_bumper;
   /*!
    * bumper (seq: RIGHT, CENTER, LEFT)
    */
-  OutPort<RTC::TimedBooleanSeq> m_bumperOut;
-    
+  RTC::OutPort<RTC::TimedBooleanSeq> m_bumperOut;
+  
   // </rtc-template>
 
   // CORBA Port declaration
@@ -326,7 +334,6 @@ class KobukiRTC
 
   rt_net::Kobuki *m_pKobuki;
   JOYINFOEX m_JoyInfoEx;
-  bool m_joy;
   bool m_rtcError;  //OpenRTM-aist-1.2.0のバグ回避
 };
 

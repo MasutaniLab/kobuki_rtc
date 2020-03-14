@@ -18,9 +18,9 @@ static const char* kobukirtc_spec[] =
     "implementation_id", "KobukiRTC",
     "type_name",         "KobukiRTC",
     "description",       "Kobuki RTC",
-    "version",           "1.0.0",
-    "vendor",            "Mizukawa Lab. Shibaura Univ.",
-    "category",          "Experimenta",
+    "version",           "1.1.0",
+    "vendor",            "MasutaniLab",
+    "category",          "MobileRobot",
     "activity_type",     "PERIODIC",
     "kind",              "DataFlowComponent",
     "max_instance",      "1",
@@ -32,6 +32,7 @@ static const char* kobukirtc_spec[] =
     "conf.default.gainP", "100",
     "conf.default.gainI", "0.1",
     "conf.default.gainD", "2",
+    "conf.default.joy", "1",
 
     // Widget
     "conf.__widget__.debug", "text",
@@ -39,6 +40,7 @@ static const char* kobukirtc_spec[] =
     "conf.__widget__.gainP", "text",
     "conf.__widget__.gainI", "text",
     "conf.__widget__.gainD", "text",
+    "conf.__widget__.joy", "text",
     // Constraints
 
     "conf.__type__.debug", "int",
@@ -46,6 +48,7 @@ static const char* kobukirtc_spec[] =
     "conf.__type__.gainP", "double",
     "conf.__type__.gainI", "double",
     "conf.__type__.gainD", "double",
+    "conf.__type__.joy", "short",
 
     ""
   };
@@ -106,6 +109,7 @@ RTC::ReturnCode_t KobukiRTC::onInitialize()
   bindParameter("gainP", m_gainP, "100");
   bindParameter("gainI", m_gainI, "0.1");
   bindParameter("gainD", m_gainD, "2");
+  bindParameter("joy", m_joy, "1");
   // </rtc-template>
   
   std::cout << "end onInitialised()" << std::endl;
@@ -157,12 +161,13 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
 
   m_JoyInfoEx.dwSize = sizeof(JOYINFOEX);
   m_JoyInfoEx.dwFlags = JOY_RETURNALL;
-  if (joyGetPosEx(0, &m_JoyInfoEx) == JOYERR_NOERROR) {
-    m_joy = true;
-    RTC_INFO(("ゲームコントローラ有効"));
-  } else {
-    m_joy = false;
-    RTC_INFO(("ゲームコントローラ無効"));
+  if (m_joy) {
+    if (joyGetPosEx(0, &m_JoyInfoEx) == JOYERR_NOERROR) {
+      RTC_INFO(("ゲームコントローラ有効"));
+    } else {
+      m_joy = 0;
+      RTC_WARN(("ゲームコントローラ無効"));
+    }
   }
 
   return RTC::RTC_OK;
