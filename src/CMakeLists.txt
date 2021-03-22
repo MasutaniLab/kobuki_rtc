@@ -1,9 +1,17 @@
 set(comp_srcs KobukiRTC.cpp )
 set(standalone_srcs KobukiRTCComp.cpp)
 
-set(LIBKOBUKI_DIR $ENV{LIBKOBUKI_ROOT})
-set(LIBKOBUKI_INC_DIR ${LIBKOBUKI_DIR}/include)
-set(LIBKOBUKI_LIB_DIR ${LIBKOBUKI_DIR}/lib)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(LIBKOBUKI_DIR $ENV{LIBKOBUKI_ROOT})
+  set(LIBKOBUKI_INC_DIR ${LIBKOBUKI_DIR}/include)
+  set(LIBKOBUKI_LIB_DIR ${LIBKOBUKI_DIR}/lib)
+  set(JOYSTICK_LIBRARIES winmm.lib)
+  add_definitions(JOYSTICK)
+else()
+  set(LIBKOBUKI_INC_DIR /usr/local/include/kobuki)
+  set(LIBKOBUKI_LIB_DIR /usr/local/lib)
+endif()
+
 set(LIBKOBUKI_LIBRARIES kobuki)
 
 if(${OPENRTM_VERSION_MAJOR} LESS 2)
@@ -54,12 +62,12 @@ if(NOT TARGET ALL_IDL_TGT)
  add_custom_target(ALL_IDL_TGT)
 endif(NOT TARGET ALL_IDL_TGT)
 add_dependencies(${PROJECT_NAME} ALL_IDL_TGT)
-target_link_libraries(${PROJECT_NAME} ${OPENRTM_LIBRARIES} ${LIBKOBUKI_LIBRARIES} winmm.lib)
+target_link_libraries(${PROJECT_NAME} ${OPENRTM_LIBRARIES} ${LIBKOBUKI_LIBRARIES} ${JOYSTICK_LIBRARIES})
 
 add_executable(${PROJECT_NAME}Comp ${standalone_srcs}
   ${comp_srcs} ${comp_headers} ${ALL_IDL_SRCS})
 add_dependencies(${PROJECT_NAME}Comp ALL_IDL_TGT)
-target_link_libraries(${PROJECT_NAME}Comp ${OPENRTM_LIBRARIES} ${LIBKOBUKI_LIBRARIES} winmm.lib)
+target_link_libraries(${PROJECT_NAME}Comp ${OPENRTM_LIBRARIES} ${LIBKOBUKI_LIBRARIES} ${JOYSTICK_LIBRARIES})
 
 install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}Comp
     EXPORT ${PROJECT_NAME}

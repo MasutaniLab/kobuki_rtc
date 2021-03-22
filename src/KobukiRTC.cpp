@@ -159,6 +159,7 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
   m_targetVelocity.data.vx = 0;
   m_targetVelocity.data.va = 0;
 
+#ifdef JOYSTICK
   m_JoyInfoEx.dwSize = sizeof(JOYINFOEX);
   m_JoyInfoEx.dwFlags = JOY_RETURNALL;
   if (m_joy) {
@@ -169,6 +170,7 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
       RTC_WARN(("ゲームコントローラ無効"));
     }
   }
+  #endif
 
   return RTC::RTC_OK;
 }
@@ -230,6 +232,7 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   m_bumper.data[2] = m_pKobuki->isLeftBump();
   m_bumperOut.write();
 
+#ifdef JOYSTICK
   if (m_joy && joyGetPosEx(0, &m_JoyInfoEx) == JOYERR_NOERROR) {
     if (abs(m_targetVelocity.data.vx) <= 0.001
       && abs(m_targetVelocity.data.va) <= 0.001) {
@@ -244,8 +247,9 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
       m_pKobuki->setTargetVelocity(vx, va);
     }
   }
+#endif
 
-  Sleep(9); //設定に関係なく10ms周期にするため．要件等！！
+  coil::usleep(9000); //設定に関係なく10ms周期にするため．要件等！！
   return RTC::RTC_OK;
 }
 

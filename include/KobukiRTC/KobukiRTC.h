@@ -38,8 +38,10 @@
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
 
+#ifdef JOYSTICK
 #include <Windows.h>
 #include <mmsystem.h>
+#endif
 #include "libkobuki.h"
 
 using namespace RTC;
@@ -333,7 +335,9 @@ class KobukiRTC
 
 
   rt_net::Kobuki *m_pKobuki;
+  #ifdef JOYSTICK
   JOYINFOEX m_JoyInfoEx;
+  #endif
   bool m_rtcError;  //OpenRTM-aist-1.2.0のバグ回避
 };
 
