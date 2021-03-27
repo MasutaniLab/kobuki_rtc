@@ -170,6 +170,8 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
       RTC_WARN(("ゲームコントローラ無効"));
     }
   }
+  #else
+    m_joy = 0;
   #endif
 
   return RTC::RTC_OK;
