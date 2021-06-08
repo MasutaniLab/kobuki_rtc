@@ -179,9 +179,13 @@ RTC::ReturnCode_t KobukiRTC::onActivated(RTC::UniqueId ec_id)
       RTC_WARN(("ゲームコントローラ無効"));
     }
   }
-  #else
-    m_joy = 0;
-  #endif
+#else
+  m_joy = 0;
+#endif
+
+  m_count = 0;
+  m_lastDisplay = chrono::high_resolution_clock::now();
+  m_lastCommand = chrono::high_resolution_clock::now();
 
   return RTC::RTC_OK;
 }
@@ -201,13 +205,22 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
 {
   if (m_rtcError) return RTC::RTC_ERROR; //OpenRTM-aist-1.2.0のバグ回避
 
+  chrono::high_resolution_clock::time_point now = chrono::high_resolution_clock::now();
+
   if(m_targetVelocityIn.isNew()) {
     m_targetVelocityIn.read();
     if (abs(m_targetVelocity.data.vx) > 0.001
       || abs(m_targetVelocity.data.va) > 0.001
       || !m_joy) {
       m_pKobuki->setTargetVelocity(m_targetVelocity.data.vx, m_targetVelocity.data.va);
+      m_lastCommand = now;
     }
+  }
+
+  //autoStopが0でない場合は，最後に速度指令を受けてからautoStop[s]を超過すると停止する．
+  double elapsed = 1e-9 * chrono::duration_cast<chrono::nanoseconds>(now - m_lastCommand).count();
+  if (m_autoStop != 0 && elapsed > m_autoStop) {
+    m_pKobuki->setTargetVelocity(0, 0);
   }
 
   if(m_poseUpdateIn.isNew()) {
@@ -262,7 +275,16 @@ RTC::ReturnCode_t KobukiRTC::onExecute(RTC::UniqueId ec_id)
   }
 #endif
 
-  coil::usleep(9000); //設定に関係なく10ms周期にするため．要件等！！
+  //コンフィギュレーションdisplayHzが0でない場合は，実行頻度を表示する．
+  if (m_displayHz) {
+    if (++m_count == 30) {
+      double elapsed = 1e-9 * chrono::duration_cast<chrono::nanoseconds>(now - m_lastDisplay).count();
+      RTC_INFO(("Average furequency: %lf Hz", double(m_count) / elapsed));
+      m_count = 0;
+      m_lastDisplay = now;
+    }
+  }
+
   return RTC::RTC_OK;
 }
 

@@ -38,6 +38,7 @@
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
 
+#include <chrono>
 #ifdef JOYSTICK
 #include <Windows.h>
 #include <mmsystem.h>
@@ -351,6 +352,9 @@ class KobukiRTC
   JOYINFOEX m_JoyInfoEx;
   #endif
   bool m_rtcError;  //OpenRTM-aist-1.2.0のバグ回避
+  int m_count;
+  std::chrono::high_resolution_clock::time_point m_lastDisplay;
+  std::chrono::high_resolution_clock::time_point m_lastCommand;
 };
 
 
