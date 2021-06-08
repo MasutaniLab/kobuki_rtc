@@ -227,6 +227,22 @@ Lang Type:
 		Range:           
 		Constraint:      
 
+		Name:             autoStop
+		Description:     
+		Type:            float
+		DefaultValue:     0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             displayHz
+		Description:     
+		Type:            short
+		DefaultValue:     0
+		Unit:            
+		Range:           
+		Constraint:      
+
 # </rtc-template> 
 
 This software is developed at the National Institute of Advanced

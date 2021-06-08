@@ -33,6 +33,8 @@ static const char* kobukirtc_spec[] =
     "conf.default.gainI", "0.1",
     "conf.default.gainD", "2",
     "conf.default.joy", "1",
+    "conf.default.autoStop", "0",
+    "conf.default.displayHz", "0",
 
     // Widget
     "conf.__widget__.debug", "text",
@@ -41,6 +43,8 @@ static const char* kobukirtc_spec[] =
     "conf.__widget__.gainI", "text",
     "conf.__widget__.gainD", "text",
     "conf.__widget__.joy", "text",
+    "conf.__widget__.autoStop", "text",
+    "conf.__widget__.displayHz", "text",
     // Constraints
 
     "conf.__type__.debug", "int",
@@ -49,6 +53,8 @@ static const char* kobukirtc_spec[] =
     "conf.__type__.gainI", "double",
     "conf.__type__.gainD", "double",
     "conf.__type__.joy", "short",
+    "conf.__type__.autoStop", "float",
+    "conf.__type__.displayHz", "short",
 
     ""
   };
@@ -88,18 +94,18 @@ RTC::ReturnCode_t KobukiRTC::onInitialize()
   // Set InPort buffers
   addInPort("targetVelocity", m_targetVelocityIn);
   addInPort("poseUpdate", m_poseUpdateIn);
-  
+
   // Set OutPort buffer
   addOutPort("currentPose", m_currentPoseOut);
   addOutPort("battery", m_batteryOut);
   addOutPort("bumper", m_bumperOut);
-  
+
   // Set service provider to Ports
-  
+
   // Set service consumers to Ports
-  
+
   // Set CORBA Service Ports
-  
+
   // </rtc-template>
 
   // <rtc-template block="bind_config">
@@ -110,6 +116,8 @@ RTC::ReturnCode_t KobukiRTC::onInitialize()
   bindParameter("gainI", m_gainI, "0.1");
   bindParameter("gainD", m_gainD, "2");
   bindParameter("joy", m_joy, "1");
+  bindParameter("autoStop", m_autoStop, "0");
+  bindParameter("displayHz", m_displayHz, "0");
   // </rtc-template>
   
   std::cout << "end onInitialised()" << std::endl;

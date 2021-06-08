@@ -274,6 +274,18 @@ class KobukiRTC
    * - DefaultValue: 1
    */
   short int m_joy;
+  /*!
+   * 
+   * - Name:  autoStop
+   * - DefaultValue: 0
+   */
+  float m_autoStop;
+  /*!
+   * 
+   * - Name:  displayHz
+   * - DefaultValue: 0
+   */
+  short int m_displayHz;
 
   // </rtc-template>
 

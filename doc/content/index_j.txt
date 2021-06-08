@@ -104,6 +104,8 @@ gainP            double             100
 gainI            double             0.1              
 gainD            double             2                
 joy              short              1                
+autoStop         float              0                
+displayHz        short              0                
 ================ ================== ================ ====
 
 ポート
